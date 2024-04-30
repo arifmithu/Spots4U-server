@@ -34,6 +34,13 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/spots/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const spot = await allSpots.findOne(query);
+      res.send(spot);
+    });
+
     app.get("/spots/search/:country", async (req, res) => {
       try {
         const country = req.params.country;
