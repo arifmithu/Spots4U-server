@@ -52,12 +52,6 @@ async function run() {
       }
     });
 
-    app.post("/spots", async (req, res) => {
-      const spot = req.body;
-      const result = await allSpots.insertOne(spot);
-      res.send(result);
-    });
-
     app.get("/countries", async (req, res) => {
       const cursor = allCountries.find();
       const result = await cursor.toArray();
