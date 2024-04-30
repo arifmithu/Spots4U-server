@@ -23,9 +23,10 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const allSpots = client.db("SpotsDB").collection("Spots");
+    const allCountries = client.db("SpotsDB").collection("Countries");
 
     app.get("/spots", async (req, res) => {
       const cursor = allSpots.find();
@@ -40,9 +41,31 @@ async function run() {
       res.send(spot);
     });
 
+    app.get("/spots/search/:country", async (req, res) => {
+      try {
+        const country = req.params.country;
+        const query = { country: country };
+        const cursor = await allSpots.find(query).toArray();
+        res.send(cursor);
+      } catch (error) {
+        res.status(500).json({ message: error.message }); // Handle any errors
+      }
+    });
+
     app.post("/spots", async (req, res) => {
       const spot = req.body;
       const result = await allSpots.insertOne(spot);
+      res.send(result);
+    });
+
+    app.get("/countries", async (req, res) => {
+      const cursor = allCountries.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+    app.post("/countries", async (req, res) => {
+      const country = req.body;
+      const result = await allCountries.insertOne(country);
       res.send(result);
     });
 
@@ -77,7 +100,7 @@ async function run() {
       res.send(result);
     });
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
@@ -86,7 +109,7 @@ async function run() {
     // await client.close();
   }
 }
-run().catch(console.dir);
+run().catch(console.log);
 
 app.get("/", (req, res) => {
   res.send("Spots4U server is running!");
