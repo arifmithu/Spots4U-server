@@ -6,7 +6,12 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 // middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "https://spots4u.netlify.app/"], // Replace with your React app URL
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.ak4euur.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
@@ -42,14 +47,11 @@ async function run() {
     });
 
     app.get("/spots/search/:country", async (req, res) => {
-      try {
-        const country = req.params.country;
-        const query = { country: country };
-        const cursor = await allSpots.find(query).toArray();
-        res.send(cursor);
-      } catch (error) {
-        res.status(500).json({ message: error.message });
-      }
+      const country = req.params.country;
+      const query = { country: country };
+      const cursor = await allSpots.find(query).toArray();
+      res.send(cursor);
+      console.log(cursor);
     });
 
     app.post("/spots", async (req, res) => {
